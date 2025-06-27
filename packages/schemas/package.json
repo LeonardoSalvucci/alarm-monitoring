@@ -24,6 +24,11 @@
       "import": "./dist/esm/user.js",
       "require": "./dist/cjs/user.cjs",
       "types": "./dist/types/user.d.ts"
+    },
+    "./auth": {
+      "import": "./dist/esm/auth.js",
+      "require": "./dist/cjs/auth.cjs",
+      "types": "./dist/types/auth.d.ts"
     }
   },
   "devDependencies": {

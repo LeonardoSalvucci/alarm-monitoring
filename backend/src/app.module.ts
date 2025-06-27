@@ -5,17 +5,20 @@ import { ConfigModule } from '@nestjs/config';
 import { dbConfig } from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import jwtConfig from './config/jwt.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [dbConfig],
+      load: [dbConfig, jwtConfig],
     }),
     TypeOrmModule.forRootAsync({
       useFactory: dbConfig,
     }),
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

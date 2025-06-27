@@ -8,6 +8,8 @@ import {
   Delete,
   ParseIntPipe,
   HttpCode,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,10 +17,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserSchema } from '@alarm-monitoring/schemas';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from './dto/user.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 
 // Always parse UserSchema to avoid exposing the user password and other sensitive fields
 @ApiTags('User')
 @Controller('user')
+@UseGuards(JwtAuthGuard) // Protect all user routes with JWT authentication
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -41,6 +45,16 @@ export class UserController {
   async findAll() {
     const users = await this.userService.findAll();
     return users.map((user) => UserSchema.parse(user));
+  }
+
+  @Get('/me')
+  @ApiOkResponse({
+    description: 'Current user found successfully',
+    type: UserDto,
+  })
+  async findMe(@Req() req: Request & { user: { id: number } }) {
+    const user = await this.userService.findOne(req.user.id);
+    return UserSchema.parse(user);
   }
 
   @Get(':id')
