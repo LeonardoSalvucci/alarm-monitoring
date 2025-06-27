@@ -6,6 +6,7 @@ export const JwtPayloadSchema = z.object({
 
 export const LoginResponseSchema = z.object({
   accessToken: z.string(),
+  refreshToken: z.string(),
   type: z.literal('Bearer'),
 });
 
