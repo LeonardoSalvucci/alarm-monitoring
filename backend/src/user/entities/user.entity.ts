@@ -29,6 +29,9 @@ export class User {
   @Column()
   password: string;
 
+  @Column({ nullable: true })
+  hashedRefreshToken?: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

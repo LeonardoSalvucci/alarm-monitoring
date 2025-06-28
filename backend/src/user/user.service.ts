@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { verify } from 'argon2';
 
 @Injectable()
 export class UserService {
@@ -33,5 +34,27 @@ export class UserService {
 
   async remove(id: number) {
     return await this.userRepository.delete(id);
+  }
+
+  async updateHashedRefreshToken(id: number, hashedRefreshToken: string) {
+    return await this.userRepository.update({ id }, { hashedRefreshToken });
+  }
+
+  async validateRefreshToken(id: number, hashedRefreshToken: string) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: ['hashedRefreshToken'],
+    });
+    if (!user || !user.hashedRefreshToken) {
+      return false;
+    }
+    return await verify(user.hashedRefreshToken, hashedRefreshToken);
+  }
+
+  async logout(id: number) {
+    return await this.userRepository.update(
+      { id },
+      { hashedRefreshToken: null },
+    );
   }
 }

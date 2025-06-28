@@ -5,6 +5,7 @@ import { UserService } from 'src/user/user.service';
 import jwtRefreshConfigConfiguration from 'src/config/jwt-refresh.config';
 import type { JwtPayload, LoginResponse } from '@alarm-monitoring/schemas/auth'; // Adjust the import path as necessary
 import { ConfigType } from '@nestjs/config';
+import { hash } from 'argon2';
 
 @Injectable()
 export class AuthService {
@@ -27,15 +28,26 @@ export class AuthService {
     return { id: user.id };
   }
 
-  login(userId: number): LoginResponse {
-    const payload: JwtPayload = { sub: userId };
-    const token = this.jwtService.sign(payload);
-    const refreshToken = this.jwtService.sign(payload, this.jwtRefreshConfig);
+  async login(userId: number): Promise<LoginResponse> {
+    const { accessToken, refreshToken } = await this.generateTokens(userId);
+
+    const hashedRefreshToken = await hash(refreshToken);
+    await this.userService.updateHashedRefreshToken(userId, hashedRefreshToken);
+
     return {
-      accessToken: token,
-      refreshToken: refreshToken,
+      accessToken,
+      refreshToken,
       type: 'Bearer',
     };
+  }
+
+  async generateTokens(userId: number) {
+    const payload: JwtPayload = { sub: userId };
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload),
+      this.jwtService.signAsync(payload, this.jwtRefreshConfig),
+    ]);
+    return { accessToken, refreshToken };
   }
 
   refreshToken(userId: number): LoginResponse {
@@ -47,5 +59,9 @@ export class AuthService {
       refreshToken: refreshToken,
       type: 'Bearer',
     };
+  }
+
+  async logout(userId: number): Promise<void> {
+    await this.userService.logout(userId);
   }
 }
