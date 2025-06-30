@@ -1,29 +1,13 @@
-import type { NitroFetchRequest, NitroFetchOptions } from 'nitropack';
-export const useApi = () => {
-  const { accessToken } = useUserStore();
+import { omitBy } from 'lodash-es';
+import type {UseFetchOptions} from 'nuxt/app';
 
-  const fetch = async <
-    DefaultT = unknown,
-    DefaultR extends NitroFetchRequest = NitroFetchRequest,
-    T = DefaultT,
-    R extends NitroFetchRequest = DefaultR,
-    O extends NitroFetchOptions<R> = NitroFetchOptions<R>
-  >(url: R, options: O): Promise<T> => {
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-    };
-
-    return $fetch<T>(url, {
+export const useApiFetch = async <T>(url: string, options: UseFetchOptions<T> = {}) =>
+  await useFetch<T>(url, 
+    omitBy(
+      {
+      $fetch: useNuxtApp().$api,
       ...options,
-      headers: {
-        ...headers,
-        ...(options.headers || {}),
       },
-    });
-  }
-
-  return {
-    fetch,
-  }
-}
+      (value) => value === undefined || value === null
+    )
+);

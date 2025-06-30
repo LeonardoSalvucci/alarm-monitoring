@@ -5,7 +5,6 @@ import type { JwtPayload, LoginResponse } from "@alarm-monitoring/schemas/auth";
 
 export const useUserStore = defineStore("user", 
   () => {
-    const { fetch } = useApi();
     const accessToken = ref<string | null>(null);
     const userId = ref<number | null>(null);
     const role = ref<string | null>(null);
@@ -27,7 +26,6 @@ export const useUserStore = defineStore("user",
         // Handle successful login
         if (response.accessToken) {
           const decodedToken = jwtDecode<JwtPayload>(response.accessToken);
-          console.log('Decoded Token:', decodedToken);
           setLoggedInUser(response.accessToken, decodedToken.sub.id, decodedToken.sub.role);
         } else {
           throw new Error('Login failed');
@@ -41,7 +39,7 @@ export const useUserStore = defineStore("user",
     const logout = async () => {
       try {
         // Call your backend API to log out
-        await fetch('/api/auth/logout', {
+        await useApiFetch('/api/auth/logout', {
           method: 'POST',
         });
       } catch (error) {
