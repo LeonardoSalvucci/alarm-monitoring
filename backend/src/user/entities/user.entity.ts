@@ -6,7 +6,7 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { UserRole } from '@alarm-monitoring/schemas';
+import { UserRole } from '@alarm-monitoring/schemas/user';
 
 @Entity('users')
 export class User {

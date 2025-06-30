@@ -6,6 +6,7 @@ import { dbConfig } from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { SubscriberModule } from './subscriber/subscriber.module';
 import jwtConfig from './config/jwt.config';
 
 @Module({
@@ -19,6 +20,7 @@ import jwtConfig from './config/jwt.config';
     }),
     UserModule,
     AuthModule,
+    SubscriberModule,
   ],
   controllers: [AppController],
   providers: [AppService],

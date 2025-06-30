@@ -29,6 +29,11 @@
       "import": "./dist/esm/auth.js",
       "require": "./dist/cjs/auth.cjs",
       "types": "./dist/types/auth.d.ts"
+    },
+    "./subscriber": {
+      "import": "./dist/esm/subscriber.js",
+      "require": "./dist/cjs/subscriber.cjs",
+      "types": "./dist/types/subscriber.d.ts"
     }
   },
   "devDependencies": {

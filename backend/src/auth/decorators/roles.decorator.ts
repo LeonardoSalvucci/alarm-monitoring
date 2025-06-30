@@ -1,4 +1,4 @@
-import { UserRole } from '@alarm-monitoring/schemas';
+import { UserRole } from '@alarm-monitoring/schemas/user';
 import { SetMetadata } from '@nestjs/common';
 
 export const ROLES_KEY = 'roles';

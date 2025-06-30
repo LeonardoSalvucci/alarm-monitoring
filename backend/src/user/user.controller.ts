@@ -14,7 +14,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserRole, UserSchema } from '@alarm-monitoring/schemas';
+import { UserRole, UserSchema } from '@alarm-monitoring/schemas/user';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from './dto/user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
@@ -22,6 +22,8 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 
 // Always parse UserSchema to avoid exposing the user password and other sensitive fields
+@Roles(UserRole.ADMIN)
+@UseGuards(RolesGuard)
 @ApiTags('User')
 @Controller('user')
 @UseGuards(JwtAuthGuard) // Protect all user routes with JWT authentication
@@ -50,6 +52,7 @@ export class UserController {
   }
 
   @Get('/me')
+  @Roles(UserRole.OPERATOR, UserRole.ADMIN, UserRole.DATAENTRY)
   @ApiOkResponse({
     description: 'Current user found successfully',
     type: UserDto,
@@ -83,8 +86,6 @@ export class UserController {
     return;
   }
 
-  @Roles(UserRole.ADMIN)
-  @UseGuards(RolesGuard)
   @Delete(':id')
   @HttpCode(204)
   @ApiOkResponse({
