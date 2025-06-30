@@ -34,6 +34,11 @@
       "import": "./dist/esm/subscriber.js",
       "require": "./dist/cjs/subscriber.cjs",
       "types": "./dist/types/subscriber.d.ts"
+    },
+    "./central-station": {
+      "import": "./dist/esm/central-station.js",
+      "require": "./dist/cjs/central-station.cjs",
+      "types": "./dist/types/central-station.d.ts"
     }
   },
   "devDependencies": {

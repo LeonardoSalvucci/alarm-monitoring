@@ -9,7 +9,6 @@ import {
   UseGuards,
   ParseIntPipe,
   HttpCode,
-  NotFoundException,
 } from '@nestjs/common';
 import { SubscriberService } from './subscriber.service';
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
@@ -24,7 +23,7 @@ import { Subscriber } from './entities/subscriber.entity';
 
 @Roles(UserRole.ADMIN, UserRole.DATAENTRY)
 @UseGuards(RolesGuard)
-@ApiTags('subscriber')
+@ApiTags('Subscriber')
 @Controller('subscriber')
 @UseGuards(JwtAuthGuard)
 export class SubscriberController {
@@ -36,8 +35,7 @@ export class SubscriberController {
     type: Subscriber,
   })
   async create(@Body() createSubscriberDto: CreateSubscriberDto) {
-    const subscriber = await this.subscriberService.create(createSubscriberDto);
-    return SubscriberDto.schema.parse(subscriber);
+    return await this.subscriberService.create(createSubscriberDto);
   }
 
   @Get()
@@ -47,10 +45,7 @@ export class SubscriberController {
     isArray: true,
   })
   async findAll() {
-    const subscribers = await this.subscriberService.findAll();
-    return subscribers.map((subscriber) =>
-      SubscriberDto.schema.parse(subscriber),
-    );
+    return await this.subscriberService.findAll();
   }
 
   @Get(':id')
@@ -59,10 +54,7 @@ export class SubscriberController {
     type: SubscriberDto,
   })
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    const subscriber = await this.subscriberService.findOne(id);
-    return subscriber
-      ? SubscriberDto.schema.parse(subscriber)
-      : new NotFoundException(`Subscriber not found`);
+    return await this.subscriberService.findOne(id);
   }
 
   @Patch(':id')

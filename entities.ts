@@ -18,93 +18,9 @@ export enum AlarmPriority {
 
 
 // entities/CentralStation.ts
-import {
-  Entity,
-  PrimaryColumn,
-  Column,
-  CreateDateColumn,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-  Index,
-} from 'typeorm';
-import { Subscriber } from './Subscriber';
-import { CsidZone } from './CsidZone';
 
-@Entity('centralstations')
-@Index(['csid'])
-@Index(['subscriberId'])
-export class CentralStation {
-  @PrimaryColumn()
-  id: number;
 
-  @Column({ nullable: true })
-  csid: string;
 
-  @Column({ name: 'subscriber_id' })
-  subscriberId: number;
-
-  @Column({ name: 'system_name', nullable: true })
-  systemName: string;
-
-  @Column({ nullable: true })
-  partition: number;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @ManyToOne(() => Subscriber, (subscriber) => subscriber.centralStations)
-  @JoinColumn({ name: 'subscriber_id' })
-  subscriber: Subscriber;
-
-  @OneToMany(() => CsidZone, (csidZone) => csidZone.centralStation)
-  csidZones: CsidZone[];
-}
-
-// entities/CsidZone.ts
-import {
-  Entity,
-  PrimaryColumn,
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  ManyToOne,
-  JoinColumn,
-  Index,
-} from 'typeorm';
-import { CentralStation } from './CentralStation';
-
-@Entity('csidzones')
-@Index(['eventCode', 'zoneNumber'], { unique: true })
-export class CsidZone {
-  @PrimaryColumn()
-  id: number;
-
-  @Column({ name: 'centralstation_id' })
-  centralstationId: number;
-
-  @Column({ name: 'event_code' })
-  eventCode: number;
-
-  @Column({ name: 'zone_number' })
-  zoneNumber: number;
-
-  @Column({ name: 'zone_name', nullable: true })
-  zoneName: string;
-
-  @Column({ nullable: true })
-  description: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt: Date;
-
-  @ManyToOne(() => CentralStation, (centralStation) => centralStation.csidZones)
-  @JoinColumn({ name: 'centralstation_id' })
-  centralStation: CentralStation;
-}
 
 // entities/Alarm.ts
 import { Entity, PrimaryColumn, Column, Index } from 'typeorm';

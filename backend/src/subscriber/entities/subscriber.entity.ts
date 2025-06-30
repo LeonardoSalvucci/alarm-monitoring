@@ -1,12 +1,13 @@
 // entities/Subscriber.ts
+import { CentralStation } from 'src/central-station/entities/central-station.entity';
 import {
   Entity,
   Column,
   CreateDateColumn,
   PrimaryGeneratedColumn,
-  //OneToMany,
+  OneToMany,
+  DeleteDateColumn,
 } from 'typeorm';
-// import { CentralStation } from './CentralStation';
 // import { AlarmStack } from './AlarmStack';
 
 @Entity('subscribers')
@@ -26,11 +27,15 @@ export class Subscriber {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  // @OneToMany(
-  //   () => CentralStation,
-  //   (centralStation) => centralStation.subscriber,
-  // )
-  // centralStations: CentralStation[];
+  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
+  deletedAt: Date;
+
+  @OneToMany(
+    () => CentralStation,
+    (centralStation) => centralStation.subscriber,
+    { cascade: true },
+  )
+  centralStations: CentralStation[];
 
   // @OneToMany(() => AlarmStack, (alarmStack) => alarmStack.subscriber)
   // alarmStacks: AlarmStack[];
