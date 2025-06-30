@@ -1,7 +1,11 @@
+import { UserRole } from 'user.ts';
 import { z } from 'zod';
 
 export const JwtPayloadSchema = z.object({
-  sub: z.number().int().positive(),
+  sub: z.object({
+    id: z.number().int().positive(),
+    role: z.nativeEnum(UserRole)
+  })
 });
 
 export const LoginResponseSchema = z.object({

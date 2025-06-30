@@ -25,6 +25,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         'Invalid JWT token: missing subject (sub) field',
       );
     }
-    return { id: payload.sub };
+    return payload.sub;
   }
 }

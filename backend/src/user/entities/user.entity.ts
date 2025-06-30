@@ -30,7 +30,7 @@ export class User {
   password: string;
 
   @Column({ nullable: true })
-  hashedRefreshToken?: string | null;
+  hashedRefreshToken: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

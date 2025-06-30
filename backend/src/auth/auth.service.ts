@@ -25,11 +25,14 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException();
     }
-    return { id: user.id };
+    return { id: user.id, role: user.role };
   }
 
-  async login(userId: number): Promise<LoginResponse> {
-    const { accessToken, refreshToken } = await this.generateTokens(userId);
+  async login(userId: number, role: string): Promise<LoginResponse> {
+    const { accessToken, refreshToken } = await this.generateTokens(
+      userId,
+      role,
+    );
 
     const hashedRefreshToken = await hash(refreshToken);
     await this.userService.updateHashedRefreshToken(userId, hashedRefreshToken);
@@ -41,8 +44,8 @@ export class AuthService {
     };
   }
 
-  async generateTokens(userId: number) {
-    const payload: JwtPayload = { sub: userId };
+  async generateTokens(userId: number, role: string) {
+    const payload: JwtPayload = { sub: { id: userId, role } };
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload),
       this.jwtService.signAsync(payload, this.jwtRefreshConfig),
@@ -50,8 +53,8 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  refreshToken(userId: number): LoginResponse {
-    const payload: JwtPayload = { sub: userId };
+  refreshToken(userId: number, role: string): LoginResponse {
+    const payload: JwtPayload = { sub: { id: userId, role } };
     const token = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload, this.jwtRefreshConfig);
     return {

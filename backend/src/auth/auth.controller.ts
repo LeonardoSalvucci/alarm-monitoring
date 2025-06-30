@@ -13,6 +13,13 @@ import { LoginResponseDto } from './dto/login-respose.dto';
 import { RefreshAuthGuard } from './guards/refresh-auth/refresh-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
 
+type RequestGuard = Request & {
+  user: {
+    id: number;
+    role: string;
+  };
+};
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -25,8 +32,8 @@ export class AuthController {
     type: LoginResponseDto,
   })
   @UseGuards(LocalAuthGuard)
-  login(@Request() req: Request & { user: { id: number } }) {
-    return this.authService.login(req.user.id);
+  login(@Request() req: RequestGuard) {
+    return this.authService.login(req.user.id, req.user.role);
   }
 
   @Post('refresh')
@@ -36,8 +43,8 @@ export class AuthController {
     type: LoginResponseDto,
   })
   @UseGuards(RefreshAuthGuard)
-  refresh(@Request() req: Request & { user: { id: number } }) {
-    return this.authService.refreshToken(req.user.id);
+  refresh(@Request() req: RequestGuard) {
+    return this.authService.refreshToken(req.user.id, req.user.role);
   }
 
   @Post('logout')
@@ -46,7 +53,7 @@ export class AuthController {
     description: 'Logout successful',
   })
   @UseGuards(JwtAuthGuard)
-  async logout(@Request() req: Request & { user: { id: number } }) {
+  async logout(@Request() req: RequestGuard) {
     await this.authService.logout(req.user.id);
     return;
   }

@@ -54,7 +54,7 @@ export class UserService {
   async logout(id: number) {
     return await this.userRepository.update(
       { id },
-      { hashedRefreshToken: null },
+      { hashedRefreshToken: undefined },
     );
   }
 }

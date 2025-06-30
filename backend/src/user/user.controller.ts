@@ -14,10 +14,12 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserSchema } from '@alarm-monitoring/schemas';
+import { UserRole, UserSchema } from '@alarm-monitoring/schemas';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from './dto/user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 
 // Always parse UserSchema to avoid exposing the user password and other sensitive fields
 @ApiTags('User')
@@ -53,6 +55,7 @@ export class UserController {
     type: UserDto,
   })
   async findMe(@Req() req: Request & { user: { id: number } }) {
+    console.log('req.user', req.user);
     const user = await this.userService.findOne(req.user.id);
     return UserSchema.parse(user);
   }
@@ -80,6 +83,8 @@ export class UserController {
     return;
   }
 
+  @Roles(UserRole.ADMIN)
+  @UseGuards(RolesGuard)
   @Delete(':id')
   @HttpCode(204)
   @ApiOkResponse({

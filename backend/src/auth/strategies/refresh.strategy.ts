@@ -6,7 +6,6 @@ import { JwtPayload } from '@alarm-monitoring/schemas/auth';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { Request } from 'express';
-import { hash } from 'argon2';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -32,13 +31,16 @@ export class JwtRefreshStrategy extends PassportStrategy(
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token is required');
     }
-    if (!payload?.sub) {
+    if (!payload?.sub.id) {
       throw new UnauthorizedException(
         'Invalid JWT token: missing subject (sub) field',
       );
     }
     if (
-      !(await this.userService.validateRefreshToken(payload.sub, refreshToken))
+      !(await this.userService.validateRefreshToken(
+        payload.sub.id,
+        refreshToken,
+      ))
     ) {
       throw new UnauthorizedException('Invalid refresh token');
     }
