@@ -10,8 +10,6 @@
     <div class="flex items-center">
       <button
         class="cursor-pointer transition scale-none hover:scale-110 hover:text-red-500"
-        popovertarget="tooltip"
-        style="anchor-name: --anchor-el"
         @click="handleLogout"
       >
         <svg
@@ -36,13 +34,6 @@
           stroke-linejoin="round"
         /></svg>
       </button>
-      <div
-        id="tooltip"
-        style="position-anchor: --anchor-el; top: anchor(bottom); left: anchor(left);"
-        popover
-      >
-        Logout
-      </div>
     </div>
   </header>
 </template>
