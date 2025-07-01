@@ -2,12 +2,14 @@ import { defineStore } from "pinia";
 import { piniaPluginPersistedstate } from "#imports";
 import { jwtDecode } from 'jwt-decode'
 import type { JwtPayload, LoginResponse } from "@alarm-monitoring/schemas/auth";
+import type { User } from "@alarm-monitoring/schemas/user";
 
 export const useUserStore = defineStore("user", 
   () => {
-    const accessToken = ref<string | null>(null);
+    const accessToken = useState<string | null>(() => null);
     const userId = ref<number | null>(null);
     const role = ref<string | null>(null);
+    const user = ref<User | null>(null);
 
     const isAuthenticated = computed(() => !!accessToken.value);
     
@@ -27,6 +29,7 @@ export const useUserStore = defineStore("user",
         if (response.accessToken) {
           const decodedToken = jwtDecode<JwtPayload>(response.accessToken);
           setLoggedInUser(response.accessToken, decodedToken.sub.id, decodedToken.sub.role);
+          await loadUserData();
         } else {
           throw new Error('Login failed');
         }
@@ -35,6 +38,12 @@ export const useUserStore = defineStore("user",
           throw new Error(errorMsg);
         }
     };
+
+    const loadUserData = async () => {
+      if (accessToken.value && !user.value?.name) {
+        user.value = await $fetch<User>('/api/user/me', { headers: { Authorization: `Bearer ${accessToken.value}` } });
+      }
+    }
 
     const logout = async () => {
       try {
@@ -66,6 +75,8 @@ export const useUserStore = defineStore("user",
       accessToken,
       userId,
       role,
+      user,
+      loadUserData,
       logout,
       login,
       reset,
@@ -77,6 +88,7 @@ export const useUserStore = defineStore("user",
         storage: piniaPluginPersistedstate.cookies({
           sameSite: 'strict',
         }),
+        omit: ['user']
       }
     ],
   },
