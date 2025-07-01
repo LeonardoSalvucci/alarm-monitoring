@@ -1,14 +1,11 @@
 import { defineStore } from "pinia";
 import { piniaPluginPersistedstate } from "#imports";
-import { jwtDecode } from 'jwt-decode'
-import type { JwtPayload, LoginResponse } from "@alarm-monitoring/schemas/auth";
+import type { LoginResponse } from "@alarm-monitoring/schemas/auth";
 import type { User } from "@alarm-monitoring/schemas/user";
 
 export const useUserStore = defineStore("user", 
   () => {
     const accessToken = useState<string | null>(() => null);
-    const userId = ref<number | null>(null);
-    const role = ref<string | null>(null);
     const user = ref<User | null>(null);
 
     const isAuthenticated = computed(() => !!accessToken.value);
@@ -27,8 +24,7 @@ export const useUserStore = defineStore("user",
 
         // Handle successful login
         if (response.accessToken) {
-          const decodedToken = jwtDecode<JwtPayload>(response.accessToken);
-          setLoggedInUser(response.accessToken, decodedToken.sub.id, decodedToken.sub.role);
+          setLoggedInUser(response.accessToken);
           await loadUserData();
         } else {
           throw new Error('Login failed');
@@ -58,23 +54,18 @@ export const useUserStore = defineStore("user",
       }
     }
     
-    const setLoggedInUser = (token: string, id: number, userRole: string) => {
+    const setLoggedInUser = (token: string) => {
       accessToken.value = token;
-      userId.value = id;
-      role.value = userRole;
     };
 
     const reset = () => {
       accessToken.value = null;
-      userId.value = null;
-      role.value = null;
+      user.value = null;
     }
 
     return {
       isAuthenticated,
       accessToken,
-      userId,
-      role,
       user,
       loadUserData,
       logout,
